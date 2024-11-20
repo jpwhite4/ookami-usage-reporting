@@ -8,11 +8,13 @@ import re
 
 import amieclient
 
+
+VERSION = "1.0.0"
+
 logger = logging.getLogger(__name__)
 
-
 def process_jobs(filename, resource):
-    project_re = re.compile(r'^pn_[a-z]{3}[0-9]{6}$')
+    project_re = re.compile(r'^pn_.*[^fs]$')
 
     with open(filename, 'r') as filep:
         slurmreader = csv.DictReader(filep, fieldnames=['JobID','User','Account','Submit','Start','End','NNodes','ncpus','ElapsedRaw','partition','jobname'], delimiter='|')
@@ -52,6 +54,8 @@ def main():
         prog='report_access_usage.py',
         formatter_class=CombinedFormatter,
         description="""
+Version: {}
+
 Read a slurm job log and use the data to send to the Allocations usage API.
 
 Slurm logs should be generated with the following command:
@@ -69,7 +73,7 @@ Then load this into the Allocations Usage database with:
 
 [PATH TO AMIECLIENT python3]/report_access_usage.py slurm_jobs.log
 
-"""
+""".format(VERSION)
     )
 
     parser.add_argument('--dryrun', help='Operate in dry run mode. This will parse the file and process it but not send data to the usage API.', action='store_true')
@@ -112,10 +116,6 @@ Then load this into the Allocations Usage database with:
             logging.info(f"Sent {record_count} records.")
     
     logging.info(f"Sent {record_count} records.")
-
-    status = usage_client.status()
-
-    logging.info(status.as_list())
 
 if __name__ == "__main__":
     main()

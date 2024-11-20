@@ -12,4 +12,5 @@ SLURM_TIME_FORMAT=%s TZ=UTC sacct --allclusters --allusers \
 
 Then run the python script to read in the jobs file
 ```
+[PATH TO PYTHON] report_access_usage.py slurm_jobs.log
 ```
